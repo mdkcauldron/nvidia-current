@@ -9,7 +9,7 @@ Index: nvidia-settings-1.0/src/gtk+-2.x/ctkdisplayconfig-utils.c
 -                                   "screen %d.",
 +                                   "screen %d.\n"
 +				   "To enable it, enable the option \"Enable duplicate display\n"
-+				   "on the second display\" in DrakX11 (Mandriva Control Center =>\n"
++				   "on the second display\" in DrakX11 (Mageia Control Center =>\n"
 +				   "Hardware => Set up the graphical server => Options).",
                                     screen_id);
          nv_warning_msg(*err_str);
@@ -21,7 +21,7 @@ Index: nvidia-settings-1.0/src/gtk+-2.x/ctkdisplayconfig-utils.c
 -                                   "dynamic twinview disabled.",
 +                                   "dynamic twinview disabled.\n"
 +                                   "To enable it, enable the option \"Enable duplicate display\n"
-+                                   "on the second display\" in DrakX11 (Mandriva Control Center =>\n"
++                                   "on the second display\" in DrakX11 (Mageia Control Center =>\n"
 +                                   "Hardware => Set up the graphical server => Options).",
                                     screen_id);
          nv_warning_msg(*err_str);
