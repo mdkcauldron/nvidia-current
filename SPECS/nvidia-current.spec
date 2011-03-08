@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		270.30
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	10
 %endif
@@ -132,6 +132,12 @@ Requires:	kmod(%{modulename}) = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
 # the vdpau library package. We ensure its installation here.
 Requires:	%{_lib}vdpau1
+%if !%simple
+# Conflict with the next videodrv ABI break.
+# The NVIDIA driver supports the previous ABI versions as well and therefore
+# a strict version-specific requirement would not be enough.
+Conflicts:	xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
+%endif
 # Obsoletes for naming changes:
 Obsoletes:	nvidia < 1:%{version}-%{release}
 Provides:	nvidia = 1:%{version}-%{release}
@@ -668,7 +674,7 @@ touch				%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 
 # modprobe.conf
 install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.d
-touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver
+touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver.conf
 echo "alias nvidia %{modulename}" 	>  %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 echo "blacklist nouveau"		>> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 
@@ -751,7 +757,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
 	--slave %{_libdir}/vdpau/libvdpau_nvidia.so.1 %{_lib}vdpau_nvidia.so.1 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version} \
-	--slave %{_sysconfdir}/modprobe.d/display-driver display-driver.modconf %{_sysconfdir}/%{drivername}/modprobe.conf \
+	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.modconf %{_sysconfdir}/%{drivername}/modprobe.conf \
 	--slave %{_sysconfdir}/modprobe.preload.d/display-driver display-driver.preload %{_sysconfdir}/%{drivername}/modprobe.preload \
 	--slave %{_sysconfdir}/OpenCL/vendors/nvidia.icd nvidia.icd %{_sysconfdir}/%{drivername}/nvidia.icd \
 %ifarch %{biarches}
@@ -812,7 +818,7 @@ rm -rf %{buildroot}
 # ld.so.conf, modprobe.conf, xvmcconfig, xinit
 %ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
 %ghost %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
-%ghost %{_sysconfdir}/modprobe.d/display-driver
+%ghost %{_sysconfdir}/modprobe.d/display-driver.conf
 %ghost %{_sysconfdir}/modprobe.preload.d/display-driver
 %dir %{_sysconfdir}/%{drivername}
 %{_sysconfdir}/%{drivername}/modprobe.conf
