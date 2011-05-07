@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		270.41.06
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	10
 %endif
@@ -164,7 +164,6 @@ Group:		System/Kernel and hardware
 Requires:	dkms
 Requires(post):	dkms
 Requires(preun): dkms
-Requires:	%{driverpkgname} = %{version}
 Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
@@ -194,7 +193,7 @@ normal use.
 Summary:	CUDA and OpenCL libraries for NVIDIA proprietary driver
 Group: 		System/Kernel and hardware
 Provides:	%{drivername}-cuda = %{version}-%{release}
-Requires:	%{driverpkgname} = %{version}-%{release}
+Requires:	kmod(%{modulename}) = %{version}
 Conflicts:	nvidia < 1:195.36.15-4
 
 %description -n %{drivername}-cuda-opencl
