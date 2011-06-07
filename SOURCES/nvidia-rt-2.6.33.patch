@@ -1,9 +1,7 @@
-Index: NVIDIA-Linux-x86_64-260.19.06/kernel/nv-linux.h
-===================================================================
---- NVIDIA-Linux-x86_64-260.19.06/kernel/nv-linux.h
-+++ NVIDIA-Linux-x86_64-260.19.06/kernel/nv-linux.h	2010-10-09 19:48:16.988334508 +0300
-@@ -241,7 +241,18 @@
- #error "NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT value unrecognized!"
+--- NVIDIA-Linux-x86_64-275.09.04/kernel/nv-linux.h.orig	2011-06-02 21:51:49.000000000 +0200
++++ NVIDIA-Linux-x86_64-275.09.04/kernel/nv-linux.h	2011-06-07 17:31:41.463483940 +0200
+@@ -260,7 +260,18 @@
+ #endif
  #endif
  
 -#if defined(CONFIG_PREEMPT_RT)
@@ -22,7 +20,7 @@ Index: NVIDIA-Linux-x86_64-260.19.06/kernel/nv-linux.h
  typedef atomic_spinlock_t         nv_spinlock_t;
  #define NV_SPIN_LOCK_INIT(lock)   atomic_spin_lock_init(lock)
  #define NV_SPIN_LOCK_IRQ(lock)    atomic_spin_lock_irq(lock)
-@@ -815,7 +826,7 @@
+@@ -853,7 +864,7 @@
  }
  
  #if defined(CONFIG_PREEMPT_RT)
