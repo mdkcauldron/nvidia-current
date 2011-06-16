@@ -2,13 +2,13 @@
 self="$0"
 runfile="$1"
 if [ "$(tail -n1 $self)" = "#LAST_LINE_OF_NVIDIA_MAKEBIN" ]; then
-	echo "This program is not nvidia-mdvbuild!"
+	echo "This program is not nvidia-mgabuild!"
 	echo "You need to cat nvidia-current.spec into this file."
 	exit 1
 fi
 
-if [ ! -f /etc/mandriva-release ]; then
-	echo "You can build Mandriva packages only on a Mandriva Linux system."
+if [ ! -f /etc/mageia-release ]; then
+	echo "You can build Mageia packages only on a Mageia Linux system."
 	exit 1
 fi
 
@@ -76,7 +76,7 @@ pkg0|pkg1)
 	exit 1
 esac
 
-temp_root="$(mktemp -d --tmpdir nvidia-mdvbuild.XXXXXX)"
+temp_root="$(mktemp -d --tmpdir nvidia-mgabuild.XXXXXX)"
 mkdir -p $temp_root/{RPMS,BUILD,tmp}
 tail -n +$(($(grep -n '^#LAST_LINE_OF_NVIDIA_MAKEBIN$' $self | cut -f1 -d:)+1)) $self > $temp_root/nvidia-current.spec
 
@@ -92,9 +92,9 @@ LC_ALL=C rpmbuild -bb --with simple \
 	--define "rel 1" \
 	--define "nsource $(readlink -f ${runfile})" \
 	--define "pkgname $(basename $runfile .run)" \
-	--define "distsuffix custom.nvidia.mdv" \
+	--define "distsuffix custom.nvidia.mga" \
 	--define "vendor Custom NVIDIA package" \
-	--define "packager nvidia-mdvbuild - http://kenobi.mandriva.com/~anssi/nvidia-mdvbuild" \
+	--define "packager nvidia-mgabuild - http://onse.fi/nvidia-mgabuild" \
 	$temp_root/nvidia-current.spec &> $temp_root/output.log
 
 buildstatus=$?
@@ -113,7 +113,7 @@ fi
 echo
 echo
 cat $temp_root/BUILD/*/*/warns.log 2>/dev/null &&
-	echo -e "Please inform Anssi Hannula <anssi@mandriva.org> or http://qa.mandriva.com/ of the above warnings.\n"
+	echo -e "Please inform Anssi Hannula <anssi@mageia.org> or http://bugs.mageia.org/ of the above warnings.\n"
 for package in ${temp_root}/RPMS/*/*.rpm; do
 	mv $package .
 	echo "Created package: $(basename $package)"

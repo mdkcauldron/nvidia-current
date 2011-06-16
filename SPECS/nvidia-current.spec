@@ -93,7 +93,7 @@ Source1:	ftp://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.
 Source2:	ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{version}.tar.bz2
 Source3:	ftp://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{version}.tar.bz2
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
-Source4:	nvidia-mdvbuild-skel
+Source4:	nvidia-mgabuild-skel
 # -Werror=format-string
 Patch0:		nvidia-settings-format-string.patch
 # https://qa.mandriva.com/show_bug.cgi?id=39921
@@ -601,7 +601,7 @@ cat .manifest | tail -n +9 | while read line; do
 	esac
 done
 
-[ -z "$warnings" ] || echo "Please inform Anssi Hannula <anssi@mandriva.org> or http://qa.mandriva.com/ of the above warnings." >> warns.log
+[ -z "$warnings" ] || echo "Please inform Anssi Hannula <anssi@mageia.org> or http://bugs.mageia.org/ of the above warnings." >> warns.log
 
 %if %simple
 find %{buildroot}%{_libdir} %{buildroot}%{_prefix}/lib -type d | while read dir; do
