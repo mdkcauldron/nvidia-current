@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		280.04
+%define version		280.11
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	10
@@ -924,6 +924,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
 %ifarch %{biarches}
+%{nvidia_libdir32}/libnvidia-ml.so
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
@@ -956,6 +957,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
+%{nvidia_libdir32}/libnvidia-ml.so.1
+%{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
