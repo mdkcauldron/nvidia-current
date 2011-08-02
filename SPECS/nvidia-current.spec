@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		280.11
+%define version		280.13
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	10
@@ -25,6 +25,10 @@
 
 %define pkgname32	NVIDIA-Linux-x86-%{version}
 %define pkgname64	NVIDIA-Linux-x86_64-%{version}
+
+# Disable when the sources aren't on ftp yet, but can be downloaded from
+# http://us.download.nvidia.com
+%define ftp 0
 
 # For now, backportability is kept for 2008.0 forwards.
 
@@ -87,11 +91,19 @@ Name:		%{name}
 Version:	%{version}
 Release:	%mkrel %{rel}
 %if !%simple
+%if %ftp
 Source0:	ftp://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
 Source1:	ftp://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
 # GPLv2 source code; see also http://cgit.freedesktop.org/~aplattner/
 Source2:	ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{version}.tar.bz2
 Source3:	ftp://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{version}.tar.bz2
+%else
+Source0:	http://us.download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
+Source1:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
+# GPLv2 source code; see also http://cgit.freedesktop.org/~aplattner/
+Source2:	http://us.download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{version}.tar.bz2
+Source3:	http://us.download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{version}.tar.bz2
+%endif
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source4:	nvidia-mgabuild-skel
 # -Werror=format-string
