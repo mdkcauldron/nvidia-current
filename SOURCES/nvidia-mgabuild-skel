@@ -64,18 +64,6 @@ x86)
 	exit 1
 esac
 
-case $pkgstyle in
-no-compat32)
-	echo "Unable to generate a package from a no-compat32 version of the driver."
-	echo "Use the normal version NVIDIA-Linux-$run_arch-$version.run instead."
-	exit 1
-	;;
-pkg0|pkg1)
-	echo "Unable to generate a package from a $pkgstyle version of the driver."
-	echo "You must use NVIDIA-Linux-$run_arch-$version-pkg2.run instead."
-	exit 1
-esac
-
 temp_root="$(mktemp -d --tmpdir nvidia-mgabuild.XXXXXX)"
 mkdir -p $temp_root/{RPMS,BUILD,tmp}
 tail -n +$(($(grep -n '^#LAST_LINE_OF_NVIDIA_MAKEBIN$' $self | cut -f1 -d:)+1)) $self > $temp_root/nvidia-current.spec
