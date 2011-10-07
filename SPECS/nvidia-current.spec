@@ -15,10 +15,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		280.13
+%define version		285.05.09
 %define rel		1
 # the highest supported videodrv abi
-%define videodrv_abi	10
+%define videodrv_abi	11
 %endif
 
 %define priority	9700
@@ -580,7 +580,7 @@ cat .manifest | tail -n +9 | while read line; do
 			continue
 %endif
 			;;
-		*nvidia-smi|*nvidia-bug-report.sh)
+		*nvidia-smi|*nvidia-bug-report.sh|*nvidia-debugdump)
 			# ok
 			;;
 		*)
@@ -646,6 +646,7 @@ install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{n
 %endif
 # binary alternatives
 install -d -m755			%{buildroot}%{_bindir}
+touch					%{buildroot}%{_bindir}/nvidia-debugdump
 touch					%{buildroot}%{_bindir}/nvidia-settings
 touch					%{buildroot}%{_bindir}/nvidia-smi
 touch					%{buildroot}%{_bindir}/nvidia-xconfig
@@ -757,6 +758,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_bindir}/nvidia-settings nvidia_settings %{nvidia_bindir}/nvidia-settings \
 	--slave %{_bindir}/nvidia-smi nvidia_smi %{nvidia_bindir}/nvidia-smi \
 	--slave %{_bindir}/nvidia-xconfig nvidia_xconfig %{nvidia_bindir}/nvidia-xconfig \
+	--slave %{_bindir}/nvidia-debugdump nvidia-debugdump %{nvidia_bindir}/nvidia-debugdump \
 	--slave %{_bindir}/nvidia-bug-report.sh nvidia_bug_report %{nvidia_bindir}/nvidia-bug-report.sh \
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
@@ -835,12 +837,14 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/OpenCL/vendors
 %ghost %{_sysconfdir}/OpenCL/vendors/nvidia.icd
 
+%ghost %{_bindir}/nvidia-debugdump
 %ghost %{_bindir}/nvidia-settings
 %ghost %{_bindir}/nvidia-smi
 %ghost %{_bindir}/nvidia-xconfig
 %ghost %{_bindir}/nvidia-bug-report.sh
 %if !%simple
 %dir %{nvidia_bindir}
+%{nvidia_bindir}/nvidia-debugdump
 %{nvidia_bindir}/nvidia-settings
 %{nvidia_bindir}/nvidia-smi
 %{nvidia_bindir}/nvidia-xconfig
