@@ -793,6 +793,9 @@ fi
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
 %endif
 
+%post -n %{drivername}-cuda-opencl
+# explicit /sbin/ldconfig due to a non-standard library directory
+/sbin/ldconfig -X
 
 %post -n dkms-%{drivername}
 /usr/sbin/dkms --rpm_safe_upgrade add -m %{drivername} -v %{version}-%{release} &&
