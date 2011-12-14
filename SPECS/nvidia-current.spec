@@ -314,7 +314,7 @@ Exec=%{_bindir}/nvidia-settings
 Icon=%{drivername}-settings
 Terminal=false
 Type=Application
-Categories=GTK;Settings;HardwareSettings;X-MandrivaLinux-System-Configuration;
+Categories=GTK;Settings;HardwareSettings;
 EOF
 
 install -d -m755	%{buildroot}%{_datadir}/applications
