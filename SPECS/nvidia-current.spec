@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		290.10
+%define version		295.20
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	11
@@ -144,12 +144,8 @@ Requires:	kmod(%{modulename}) = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
 # the vdpau library package. We ensure its installation here.
 Requires:	%{_lib}vdpau1
-%if !%simple
-# Conflict with the next videodrv ABI break.
-# The NVIDIA driver supports the previous ABI versions as well and therefore
-# a strict version-specific requirement would not be enough.
-### This is problematic as it can cause removal of xserver instead (Anssi 04/2011)
-###Conflicts:  xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
+%if !%simple && %mgaversion >= 2
+Requires:	xserver-abi(videodrv) < %(echo $((%{videodrv_abi}+1)))
 %endif
 # Obsoletes for naming changes:
 Obsoletes:	nvidia < 1:%{version}-%{release}
