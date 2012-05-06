@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		295.40
+%define version		295.49
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	11
@@ -270,7 +270,7 @@ installation in the file 'README.install.urpmi' in this directory.
 EOF
 
 %if !%simple
-rm nvidia-settings-%{version}/src/*/*.a
+#rm nvidia-settings-%{version}/src/*/*.a
 
 %build
 export CFLAGS="%optflags"
