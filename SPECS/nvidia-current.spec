@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		295.49
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	11
 %endif
@@ -114,6 +114,9 @@ Patch1:		nvidia-settings-enable-dyntwinview-mga.patch
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 # fix build with -rt patched 2.6.33+
 Patch4:		nvidia-rt-2.6.33.patch
+# fix build with 3.4 series kernels
+Patch5:		nvidia-current-295.49-kernel-3.4-buildfix.patch
+
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -236,6 +239,7 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch4 -p1
+%patch5 -p0
 cd ..
 %endif
 
