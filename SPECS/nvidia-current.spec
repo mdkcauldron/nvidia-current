@@ -18,7 +18,7 @@
 %define version		295.49
 %define rel		4
 # the highest supported videodrv abi
-%define videodrv_abi	11
+%define videodrv_abi	12
 %endif
 
 %define priority	9700
