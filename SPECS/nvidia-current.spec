@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		295.49
-%define rel		6
+%define version		295.59
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -115,7 +115,7 @@ Patch3:		nvidia-settings-include-xf86vmproto.patch
 # fix build with -rt patched 2.6.33+
 Patch4:		nvidia-rt-2.6.33.patch
 # fix build with 3.4 series kernels
-Patch5:		nvidia-current-295.49-kernel-3.4-buildfix.patch
+#Patch5:		nvidia-current-295.49-kernel-3.4-buildfix.patch
 
 %endif
 License:	Freeware
@@ -239,7 +239,7 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch4 -p1
-%patch5 -p0
+#%patch5 -p0
 cd ..
 %endif
 
