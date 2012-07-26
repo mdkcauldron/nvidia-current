@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		295.59
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -150,6 +150,7 @@ Requires:	%{_lib}vdpau1
 %if !%simple && %mgaversion >= 2
 Requires:	xserver-abi(videodrv) < %(echo $((%{videodrv_abi}+1)))
 %endif
+Conflicts:	nvidia-current-cuda-opencl <= 295.59-1
 # Obsoletes for naming changes:
 Obsoletes:	nvidia < 1:%{version}-%{release}
 Provides:	nvidia = 1:%{version}-%{release}
@@ -206,6 +207,7 @@ Group: 		System/Kernel and hardware
 Provides:	%{drivername}-cuda = %{version}-%{release}
 Requires:	kmod(%{modulename}) = %{version}
 Conflicts:	nvidia < 1:195.36.15-4
+Conflicts:	x11-driver-video-nvidia-current <= 295.59-1
 
 %description -n %{drivername}-cuda-opencl
 Cuda and OpenCL libraries for NVIDIA proprietary driver. This package is not
@@ -888,6 +890,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libXvMCNVIDIA_dynamic.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-ml.so.1
+%{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
 %ifarch %{biarches}
@@ -896,6 +900,8 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-ml.so.1
+%{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
@@ -969,15 +975,11 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
-%{nvidia_libdir}/libnvidia-ml.so.1
-%{nvidia_libdir}/libnvidia-ml.so.%{version}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
-%{nvidia_libdir32}/libnvidia-ml.so.1
-%{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
