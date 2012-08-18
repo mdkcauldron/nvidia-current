@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		295.71
-%define rel		1
+%define version		304.37
+%define rel		0.2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -106,16 +106,12 @@ Source3:	http://us.download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{v
 %endif
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source4:	nvidia-mgabuild-skel
-# -Werror=format-string
-Patch0:		nvidia-settings-format-string.patch
 # https://qa.mandriva.com/show_bug.cgi?id=39921
 Patch1:		nvidia-settings-enable-dyntwinview-mga.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 # fix build with -rt patched 2.6.33+
 Patch4:		nvidia-rt-2.6.33.patch
-# fix build with 3.4 series kernels
-#Patch5:		nvidia-current-295.49-kernel-3.4-buildfix.patch
 
 %endif
 License:	Freeware
@@ -231,7 +227,6 @@ HTML version of the README.txt file provided in package
 %else
 %setup -q -c -T -a 2 -a 3
 cd nvidia-settings-%{version}
-%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 cd ..
@@ -241,7 +236,6 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch4 -p1
-#%patch5 -p0
 cd ..
 %endif
 
