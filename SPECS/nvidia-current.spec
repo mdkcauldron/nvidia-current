@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		304.37
-%define rel		0.2
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -270,7 +270,7 @@ installation in the file 'README.install.urpmi' in this directory.
 EOF
 
 %if !%simple
-#rm nvidia-settings-%{version}/src/*/*.a
+rm nvidia-settings-%{version}/src/*/*.a
 
 %build
 export CFLAGS="%optflags"
@@ -559,7 +559,7 @@ cat .manifest | tail -n +9 | while read line; do
 			continue
 %endif
 			;;
-		*nvidia-smi*)
+		*nvidia-smi*|*nvidia-cuda-proxy-control*)
 			# ok
 			;;
 		*)
@@ -576,7 +576,7 @@ cat .manifest | tail -n +9 | while read line; do
 			continue
 %endif
 			;;
-		*nvidia-smi|*nvidia-bug-report.sh|*nvidia-debugdump)
+		*nvidia-smi|*nvidia-bug-report.sh|*nvidia-debugdump|*nvidia-cuda-proxy-control|*nvidia-cuda-proxy-server)
 			# ok
 			;;
 		*)
@@ -637,7 +637,7 @@ touch %{buildroot}%{_prefix}/lib/vdpau/libvdpau_nvidia.so.1
 
 %if !%simple
 # self-built binaries
-install -m755 ../nvidia-settings-%{version}/_out/*/nvidia-settings %{buildroot}%{nvidia_bindir}
+install -m755 ../nvidia-settings-%{version}/src/_out/*/nvidia-settings %{buildroot}%{nvidia_bindir}
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{nvidia_bindir}
 %endif
 # binary alternatives
@@ -652,7 +652,7 @@ chmod 0755				%{buildroot}%{_bindir}/*
 
 %if !%simple
 # install man pages
-install -m755 ../nvidia-settings-%{version}/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
+install -m755 ../nvidia-settings-%{version}/doc/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig.1 %{buildroot}%{_mandir}/man1
 %endif
 # bug #41638 - whatis entries of nvidia man pages appear wrong
@@ -961,12 +961,16 @@ rm -rf %{buildroot}
 %files -n %{drivername}-cuda-opencl -f %pkgname/nvidia-cuda.files
 %defattr(-,root,root)
 %if !%simple
+%{nvidia_bindir}/nvidia-cuda-proxy-control
+%{nvidia_bindir}/nvidia-cuda-proxy-server
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
 %{nvidia_libdir}/libnvcuvid.so.%{version}
 %{nvidia_libdir}/libnvcuvid.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
+%{nvidia_libdir}/libnvidia-opencl.so.1
+%{nvidia_libdir}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
 %ifarch %{biarches}
@@ -977,4 +981,5 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
+%{_mandir}/man1/alt-%{drivername}-cuda-proxy-control.1*
 %endif
