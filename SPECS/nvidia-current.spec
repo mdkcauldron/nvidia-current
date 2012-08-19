@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		304.37
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -176,6 +176,7 @@ Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
 Provides:	dkms-nvidia97xx = %{version}-%{release}
+Provides:      kmod(nvidia-current) = %{version}
 
 %description -n dkms-%{drivername}
 NVIDIA kernel module for %cards. This
