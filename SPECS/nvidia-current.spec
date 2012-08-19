@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		304.37
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -176,7 +176,6 @@ Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
 Provides:	dkms-nvidia97xx = %{version}-%{release}
-Provides:      kmod(nvidia-current) = %{version}
 
 %description -n dkms-%{drivername}
 NVIDIA kernel module for %cards. This
@@ -242,6 +241,21 @@ cd ..
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
+# (tmb) nuke nVidia provided dkms.conf as we need our own
+rm -rf %{pkgname}/kernel/dkms.conf
+
+# install our own dkms.conf
+cat > %{pkgname}/kernel/dkms.conf <<EOF
+PACKAGE_NAME="%{drivername}"
+PACKAGE_VERSION="%{version}-%{release}"
+BUILT_MODULE_NAME[0]="nvidia"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
+DEST_MODULE_NAME[0]="%{modulename}"
+MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
+CLEAN="make -f Makefile.kbuild clean"
+AUTOINSTALL="yes"
+EOF
+
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
 
@@ -287,19 +301,6 @@ export LDFLAGS="%{?ldflags}"
 %install
 rm -rf %{buildroot}
 cd %{pkgname}
-
-# dkms
-install -d -m755 %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}
-cat > %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}/dkms.conf <<EOF
-PACKAGE_NAME="%{drivername}"
-PACKAGE_VERSION="%{version}-%{release}"
-BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-DEST_MODULE_NAME[0]="%{modulename}"
-MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
-CLEAN="make -f Makefile.kbuild clean"
-AUTOINSTALL="yes"
-EOF
 
 # menu entry
 install -d -m755 %{buildroot}%{_datadir}/%{drivername}
