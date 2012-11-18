@@ -446,6 +446,14 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir dest
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
+	ENCODEAPI_LIB)
+		parseparams arch
+		install_file nvidia $nvidia_libdir
+		;;
+	ENCODEAPI_LIB_SYMLINK)
+		parseparams arch dest
+		install_lib_symlink nvidia $nvidia_libdir
+		;;
 	NVCUVID_LIB)
 		parseparams arch
 		install_file nvidia-cuda $nvidia_libdir
@@ -878,6 +886,7 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
+%{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libXvMCNVIDIA.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
@@ -895,6 +904,7 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
+%{nvidia_libdir32}/libnvidia-encode.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
