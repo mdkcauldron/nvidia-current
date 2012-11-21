@@ -36,7 +36,7 @@
 %define driverpkgname		x11-driver-video-%{drivername}
 %define modulename		%{drivername}
 # for description and documentation
-%define cards			GeForce 6 and later cards
+%define cards			GeForce 8xxx and later cards
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
 %define nvidia_driversdir	%{_libdir}/%{drivername}/xorg
 %define nvidia_extensionsdir	%{_libdir}/%{drivername}/xorg
@@ -85,6 +85,11 @@
 %else
 %define _requires_exceptions %common_requires_exceptions
 %endif
+
+# (anssi) Workaround wrong linking as of 310.19.
+# This will probably be fixed soon (at least similar issues have been in the past).
+# https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
+%define _exclude_files_from_autoreq libnvidia-encode.so.%version
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
@@ -182,7 +187,7 @@ NVIDIA kernel module for %cards. This
 is to be used with the %{driverpkgname} package.
 
 %package -n %{drivername}-devel
-Summary:	NVIDIA XvMC/OpenGL/CUDA development liraries and headers
+Summary:	NVIDIA OpenGL/CUDA development liraries and headers
 Group:		Development/C
 Requires:	%{driverpkgname} = %{version}-%{release}
 Requires:	%{drivername}-cuda-opencl = %{version}-%{release}
@@ -193,9 +198,8 @@ Provides:	nvidia97xx-devel = %{version}-%{release}
 Requires:	%{_lib}vdpau-devel
 
 %description -n %{drivername}-devel
-NVIDIA XvMC static development library and OpenGL/CUDA headers for
-%cards. This package is not required for
-normal use.
+NVIDIA OpenGL/CUDA headers for %cards. This package
+is not required for normal use.
 
 %package -n %{drivername}-cuda-opencl
 Summary:	CUDA and OpenCL libraries for NVIDIA proprietary driver
@@ -447,16 +451,16 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
 	ENCODEAPI_LIB)
-		parseparams arch
-		install_file nvidia $nvidia_libdir
+		parseparams arch subdir
+		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	ENCODEAPI_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	NVCUVID_LIB)
-		parseparams arch
-		install_file nvidia-cuda $nvidia_libdir
+		parseparams arch subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
 		;;
 	NVCUVID_LIB_SYMLINK)
 		parseparams arch dest
@@ -696,10 +700,6 @@ install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.d
 touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver.conf
 echo "install nvidia /sbin/modprobe %{modulename} \$CMDLINE_OPTS" > %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 
-# XvMCConfig
-install -d -m755 %{buildroot}%{_sysconfdir}/%{drivername}
-echo "libXvMCNVIDIA_dynamic.so.1" > %{buildroot}%{_sysconfdir}/%{drivername}/XvMCConfig
-
 # xinit script
 install -d -m755 %{buildroot}%{_sysconfdir}/%{drivername}
 cat > %{buildroot}%{_sysconfdir}/%{drivername}/nvidia-settings.xinit <<EOF
@@ -766,7 +766,6 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_bindir}/nvidia-xconfig nvidia_xconfig %{nvidia_bindir}/nvidia-xconfig \
 	--slave %{_bindir}/nvidia-debugdump nvidia-debugdump %{nvidia_bindir}/nvidia-debugdump \
 	--slave %{_bindir}/nvidia-bug-report.sh nvidia_bug_report %{nvidia_bindir}/nvidia-bug-report.sh \
-	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
 	--slave %{_libdir}/vdpau/libvdpau_nvidia.so.1 %{_lib}vdpau_nvidia.so.1 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version} \
 	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
@@ -829,14 +828,13 @@ rm -rf %{buildroot}
 %{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
-# ld.so.conf, modprobe.conf, xvmcconfig, xinit
+# ld.so.conf, modprobe.conf, xinit
 %ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
 %ghost %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
 %ghost %{_sysconfdir}/modprobe.d/display-driver.conf
 %dir %{_sysconfdir}/%{drivername}
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/ld.so.conf
-%{_sysconfdir}/%{drivername}/XvMCConfig
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
@@ -886,14 +884,11 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
-%{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
-%{nvidia_libdir}/libXvMCNVIDIA.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir}/libGL.so.1
-%{nvidia_libdir}/libXvMCNVIDIA_dynamic.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
@@ -904,7 +899,6 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
-%{nvidia_libdir32}/libnvidia-encode.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
@@ -946,19 +940,20 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %if !%simple
 %{_includedir}/%{drivername}
-%{nvidia_libdir}/libXvMCNVIDIA.a
-%{nvidia_libdir}/libXvMCNVIDIA_dynamic.so
 %{nvidia_libdir}/libGL.so
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
+%{nvidia_libdir}/libnvidia-encode.so
 %ifarch %{biarches}
 %{nvidia_libdir32}/libnvidia-ml.so
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libcuda.so
+%{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libOpenCL.so
+%{nvidia_libdir32}/libnvidia-encode.so
 %endif
 %endif
 
@@ -981,6 +976,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvcuvid.so.%{version}
 %{nvidia_libdir}/libnvcuvid.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
+%{nvidia_libdir}/libnvidia-encode.so.1
+%{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-opencl.so.1
 %{nvidia_libdir}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
@@ -989,7 +986,13 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
+%{nvidia_libdir32}/libnvcuvid.so.%{version}
+%{nvidia_libdir32}/libnvcuvid.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
+%{nvidia_libdir32}/libnvidia-encode.so.1
+%{nvidia_libdir32}/libnvidia-encode.so.%{version}
+%{nvidia_libdir32}/libnvidia-opencl.so.1
+%{nvidia_libdir32}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
