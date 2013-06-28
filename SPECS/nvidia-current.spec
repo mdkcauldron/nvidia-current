@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		319.17
-%define rel		4
+%define version		319.32
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -28,7 +28,7 @@
 
 # Disable when the sources aren't on ftp yet, but can be downloaded from
 # http://us.download.nvidia.com
-%define ftp 0
+%define ftp 1
 
 # For now, backportability is kept for 2008.0 forwards.
 
