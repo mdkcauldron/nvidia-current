@@ -1,7 +1,7 @@
-diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-i2c.c NVIDIA-Linux-x86_64-319.17-no-compat32/kernel/nv-i2c.c
---- NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-i2c.c	2013-04-26 00:22:30.000000000 -0400
-+++ NVIDIA-Linux-x86_64-319.17-no-compat32/kernel/nv-i2c.c	2013-05-13 05:20:55.571981365 -0400
-@@ -311,8 +311,6 @@
+diff -Nurp NVIDIA-Linux-x86_64-319.32/kernel/nv-i2c.c NVIDIA-Linux-x86_64-319.32.fix/kernel/nv-i2c.c
+--- NVIDIA-Linux-x86_64-319.32/kernel/nv-i2c.c	2013-06-20 00:32:30.000000000 +0300
++++ NVIDIA-Linux-x86_64-319.32.fix/kernel/nv-i2c.c	2013-07-15 21:19:06.809497033 +0300
+@@ -311,8 +311,6 @@ void* NV_API_CALL nv_i2c_add_adapter(nv_
  BOOL NV_API_CALL nv_i2c_del_adapter(nv_state_t *nv, void *data)
  {
      struct i2c_adapter *pI2cAdapter = (struct i2c_adapter *)data;
@@ -10,7 +10,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-i2c.c NVIDIA
  
  #if defined(KERNEL_2_4)
      if (!NV_WEAK_SYMBOL_PRESENT(i2c_add_adapter))
-@@ -324,15 +322,10 @@
+@@ -324,15 +322,10 @@ BOOL NV_API_CALL nv_i2c_del_adapter(nv_s
      if (!pI2cAdapter) return FALSE;
  
      // attempt release with the OS
@@ -29,10 +29,10 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-i2c.c NVIDIA
  }
  
  #else // (defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE))
-diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVIDIA-Linux-x86_64-319.17-no-compat32/kernel/nv-procfs.c
---- NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c	2013-04-26 00:22:30.000000000 -0400
-+++ NVIDIA-Linux-x86_64-319.17-no-compat32/kernel/nv-procfs.c	2013-05-22 04:52:45.229495748 -0400
-@@ -60,60 +60,41 @@
+diff -Nurp NVIDIA-Linux-x86_64-319.32/kernel/nv-procfs.c NVIDIA-Linux-x86_64-319.32.fix/kernel/nv-procfs.c
+--- NVIDIA-Linux-x86_64-319.32/kernel/nv-procfs.c	2013-06-20 00:32:30.000000000 +0300
++++ NVIDIA-Linux-x86_64-319.32.fix/kernel/nv-procfs.c	2013-07-15 21:19:06.810497043 +0300
+@@ -60,60 +60,41 @@ static char nv_registry_keys[NV_MAX_REGI
          __entry;                                          \
      })
  
@@ -107,7 +107,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
      NV_KMEM_CACHE_ALLOC_STACK(sp);
      if (sp == NULL)
      {
-@@ -134,31 +115,31 @@
+@@ -134,31 +115,31 @@ nv_procfs_read_gpu_info(
          if (rm_get_device_name(sp, nv, dev->device, dev->subsystem_vendor,
                      dev->subsystem_device, NV_DEVICE_NAME_LENGTH,
                      tmpstr) != RM_OK)
@@ -145,7 +145,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
              os_free_mem(uuid);
          }
  
-@@ -166,12 +147,12 @@
+@@ -166,12 +147,12 @@ nv_procfs_read_gpu_info(
                      &vbios_rev3, &vbios_rev4,
                      &vbios_rev5) != RM_OK)
          {
@@ -160,8 +160,8 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
                             vbios_rev4, vbios_rev5);
          }
      }
-@@ -180,12 +161,12 @@
-         type = "PCI-E";
+@@ -180,12 +161,12 @@ nv_procfs_read_gpu_info(
+         type = "PCIe";
      else
          type = "PCI";
 -    len += sprintf(page+len, "Bus Type: \t %s\n", type);
@@ -177,7 +177,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
                     nv->domain, nv->bus, nv->slot, PCI_FUNC(dev->devfn));
  #if defined(DEBUG)
      do
-@@ -193,7 +174,7 @@
+@@ -193,7 +174,7 @@ nv_procfs_read_gpu_info(
          int j;
          for (j = 0; j < NV_GPU_NUM_BARS; j++)
          {
@@ -186,7 +186,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
                             j, nv->bars[j].address, (nv->bars[j].size >> 20));
          }
      } while (0);
-@@ -201,26 +182,120 @@
+@@ -201,26 +182,120 @@ nv_procfs_read_gpu_info(
  
      NV_KMEM_CACHE_FREE_STACK(sp);
  
@@ -320,7 +320,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
  }
  
  static int
-@@ -233,7 +308,7 @@
+@@ -233,7 +308,7 @@ nv_procfs_open_registry(
      nv_stack_t *sp = NULL;
  
      if (0 == (file->f_mode & FMODE_WRITE))
@@ -329,7 +329,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
  
      nvfp = nv_alloc_file_private();
      if (nvfp == NULL)
-@@ -282,6 +357,9 @@
+@@ -282,6 +357,9 @@ nv_procfs_close_registry(
      RM_STATUS rm_status;
      int rc = 0;
  
@@ -339,7 +339,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
      nvfp = NV_GET_FILE_PRIVATE(file);
      if (nvfp == NULL)
          return 0;
-@@ -346,122 +424,81 @@
+@@ -346,122 +424,81 @@ done:
      return rc;
  }
  
@@ -503,7 +503,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
  static void
  nv_procfs_add_text_file(
      struct proc_dir_entry *parent,
-@@ -469,22 +506,7 @@
+@@ -469,22 +506,7 @@ nv_procfs_add_text_file(
      const char *text
  )
  {
@@ -527,7 +527,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
  }
  #endif
  
-@@ -513,26 +535,11 @@
+@@ -513,26 +535,11 @@ int nv_register_procfs(void)
      if (!proc_nvidia)
          goto failed;
  
@@ -556,7 +556,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
      if (!entry)
          goto failed;
  
-@@ -553,8 +560,7 @@
+@@ -553,8 +560,7 @@ int nv_register_procfs(void)
  
      nv_procfs_add_text_file(proc_nvidia_patches, "README", __README_patches);
  
@@ -566,7 +566,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
      if (!entry)
          goto failed;
  
-@@ -571,15 +577,11 @@
+@@ -571,15 +577,11 @@ int nv_register_procfs(void)
          if (!proc_nvidia_gpu)
              goto failed;
  
@@ -584,7 +584,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
          if (!entry)
              goto failed;
      }
-@@ -587,7 +589,7 @@
+@@ -587,7 +589,7 @@ int nv_register_procfs(void)
      return 0;
  #if defined(CONFIG_PROC_FS)
  failed:
@@ -593,7 +593,7 @@ diff -ur -X - NVIDIA-Linux-x86_64-319.17-no-compat32.orig/kernel/nv-procfs.c NVI
      return -1;
  #endif
  }
-@@ -595,6 +597,6 @@
+@@ -595,6 +597,6 @@ failed:
  void nv_unregister_procfs(void)
  {
  #if defined(CONFIG_PROC_FS)
