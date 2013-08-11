@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		319.32
-%define rel		4
+%define rel		5
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -140,10 +140,6 @@ BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
 BuildRequires:	vdpau-devel
 %endif
-
-### TEST / FORCE gcc-4.8.2 ###
-### remove when pushing to release
-BuildRequires: gcc >= 4.8.2
 
 %description
 Source package of the current NVIDIA proprietary driver. Binary
