@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		319.49
-%define rel		1
+%define rel		0.1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -481,6 +481,14 @@ cat .manifest | tail -n +9 | while read line; do
 	NVCUVID_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia-cuda $nvidia_libdir
+		;;
+	NVIFR_LIB)
+		parseparams arch style subdir
+		install_file nvidia $nvidia_libdir
+		;;
+	NVIFR_LIB_SYMLINK)
+		parseparams arch style subdir dest
+		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	OPENGL_LIB)
 		parseparams arch
@@ -971,6 +979,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-ifr.so.1
+%{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libvdpau_nvidia.so
@@ -981,6 +991,8 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-ifr.so.1
+%{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
@@ -1025,6 +1037,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libnvidia-encode.so
@@ -1033,6 +1046,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libnvcuvid.so
+%{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-encode.so
 %endif
