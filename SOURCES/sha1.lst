@@ -1,6 +1,6 @@
-de8f81181d4e24668b7b941bc203c70371856664  NVIDIA-Linux-x86-319.32.run
-6ec7aa351207eb70509fa03c2707c1c31985559a  NVIDIA-Linux-x86_64-319.32.run
-ced4d81f8df6467d1bbe4cc3389e073f2a367210  nvidia-modprobe-319.32.tar.bz2
-49c6988d271410c04e419ee20665bfe5788da27e  nvidia-persistenced-319.32.tar.bz2
-9d5c3438e59b29cb65fee5165478bbb8445164bc  nvidia-settings-319.32.tar.bz2
-c166beed85a326ad5bdac2f8eb4568fa01fb56ca  nvidia-xconfig-319.32.tar.bz2
+f46d2f434c01a37ce516819f5c9265a801e9d159  NVIDIA-Linux-x86-319.49.run
+d5b38f4f094872ebf8dceee39e300b93b200cec6  NVIDIA-Linux-x86_64-319.49.run
+230f2b1905a2540906db952e9fe666d494c56608  nvidia-modprobe-319.49.tar.bz2
+244563f61081c2dab7227f4f2e2993d7b31ff8c3  nvidia-persistenced-319.49.tar.bz2
+c2c6e59cdf161d9d8d8946e10794af5a86e16f75  nvidia-settings-319.49.tar.bz2
+7e2cf697f0821a5bde1021b2141e2073159c9fd2  nvidia-xconfig-319.49.tar.bz2
