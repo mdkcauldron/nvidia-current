@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		319.60
-%define rel		3
+%define rel		4
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -121,8 +121,8 @@ Patch1:		nvidia-settings-enable-dyntwinview-mga.patch
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 # fix build with -rt patched 2.6.33+
 Patch4:		nvidia-rt-2.6.33.patch
-# (tmb) fix build with kernel 3.11
-Patch6:		nvidia-Linux-3.11.patch
+# (upstream) fix build with kernel 3.11
+Patch6:		get_num_physpages_319.patch
 # (tmb) fix build with kernel 3.12
 Patch7:		nvidia-current-kernel-3.12.patch
 %endif
@@ -248,7 +248,7 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch4 -p1
-%patch6 -p1
+%patch6 -p0
 %patch7 -p1
 cd ..
 %endif
