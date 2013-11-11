@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		319.60
-%define rel		4
+%define version		331.20
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -115,16 +115,8 @@ Source5:	http://us.download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persis
 %endif
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source10:	nvidia-mgabuild-skel
-# https://qa.mandriva.com/show_bug.cgi?id=39921
-Patch1:		nvidia-settings-enable-dyntwinview-mga.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# fix build with -rt patched 2.6.33+
-Patch4:		nvidia-rt-2.6.33.patch
-# (upstream) fix build with kernel 3.11
-Patch6:		get_num_physpages_319.patch
-# (tmb) fix build with kernel 3.12
-Patch7:		nvidia-current-kernel-3.12.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -239,19 +231,15 @@ HTML version of the README.txt file provided in package
 %else
 %setup -q -c -T -a 2 -a 3 -a 4 -a 5
 cd nvidia-settings-%{version}
-%patch1 -p1
 %patch3 -p1
 cd ..
 %endif
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch4 -p1
-%patch6 -p0
-%patch7 -p1
-cd ..
-%endif
+#%if !%simple
+#cd %{pkgname}
+#cd ..
+#%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -261,19 +249,27 @@ mkdir -p %{pkgname}/kernel
 %endif
 
 # (tmb) nuke nVidia provided dkms.conf as we need our own
-rm -rf %{pkgname}/kernel/dkms.conf
+rm -f %{pkgname}/kernel/dkms.conf
+rm -f %{pkgname}/kernel/uvm/dkms.conf.fragment
 
 # install our own dkms.conf
 cat > %{pkgname}/kernel/dkms.conf <<EOF
 PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/gpu/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
 CLEAN="make -f Makefile.kbuild clean"
 AUTOINSTALL="yes"
 EOF
+
+# WIP! make uvm build work
+#BUILT_MODULE_NAME[1]="nvidia-uvm"
+#BUILT_MODULE_LOCATION[1]="uvm/"
+#DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
+#MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=/var/lib/dkms/%{drivername}/%{version}-%{release}/build/uvm"
+#CLEAN+="; make -C uvm clean"
 
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
@@ -525,6 +521,16 @@ cat .manifest | tail -n +9 | while read line; do
 		case $file in *libvdpau_nvidia.so*);; *) continue; esac
 		install_lib_symlink nvidia $nvidia_libdir/$subdir
 		;;
+	VDPAU_WRAPPER_LIB)
+		parseparams arch subdir
+		case $file in *libvdpau_nvidia.so*);; *) continue; esac
+		install_file nvidia $nvidia_libdir/$subdir
+		;;
+	VDPAU_WRAPPER_SYMLINK)
+		parseparams arch subdir dest
+		case $file in *libvdpau_nvidia.so*);; *) continue; esac
+		install_lib_symlink nvidia $nvidia_libdir/$subdir
+		;;
 	XLIB_STATIC_LIB)
 		install_file nvidia-devel %{nvidia_libdir}
 		;;
@@ -665,6 +671,9 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	DOT_DESKTOP)
 		# we provide our own for now
+		;;
+	UVM_MODULE_SRC)
+		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}/uvm
 		;;
 	*)
 		error_unhandled "file $(basename $file) of unknown type $type will be skipped"
@@ -981,6 +990,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-fbc.so.1
+%{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.1
@@ -991,8 +1002,17 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir32}
 %dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
+
+%{nvidia_libdir32}/libEGL.so.1
+%{nvidia_libdir32}/libEGL.so.%{version}
 %{nvidia_libdir32}/libGL.so.%{version}
+%{nvidia_libdir32}/libGLESv1_CM.so.1
+%{nvidia_libdir32}/libGLESv1_CM.so.%{version}
+%{nvidia_libdir32}/libGLESv2.so.2
+%{nvidia_libdir32}/libGLESv2.so.%{version}
+%{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
@@ -1039,13 +1059,17 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-fbc.so
 %{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libnvidia-encode.so
 %ifarch %{biarches}
 %{nvidia_libdir32}/libnvidia-ml.so
+%{nvidia_libdir32}/libEGL.so
 %{nvidia_libdir32}/libGL.so
+%{nvidia_libdir32}/libGLESv1_CM.so
+%{nvidia_libdir32}/libGLESv2.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-ifr.so

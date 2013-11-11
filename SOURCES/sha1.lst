@@ -1,6 +1,6 @@
-67c9a61293c405d737b68c2faf53b6e00a3c5ecc  NVIDIA-Linux-x86-319.60.run
-0ff211af16caf249a2a6d68e9e2a4ce7ab88112b  NVIDIA-Linux-x86_64-319.60.run
-12291a283549dddfdcaf0ab3fbf3fe13180cebf5  nvidia-modprobe-319.60.tar.bz2
-fbdc7341d155e665a400af859b92fc4fc55d62ea  nvidia-persistenced-319.60.tar.bz2
-8fbe406ac6a27b3d9b7c95b7ee6e700e9bdd4703  nvidia-settings-319.60.tar.bz2
-0ee8d2c518680da90051f0844740eb257e6463c9  nvidia-xconfig-319.60.tar.bz2
+81b29d4fefa1ebf82be4299db7733c1d7390a0b0  NVIDIA-Linux-x86-331.20.run
+82410d1346be835d810869f5069f2e837f64e2a8  NVIDIA-Linux-x86_64-331.20.run
+e595bc84f697866c6d14684f26d8577c77323e3f  nvidia-modprobe-331.20.tar.bz2
+f81446b302ce7eeecdfff687a09347f44a40c4b8  nvidia-persistenced-331.20.tar.bz2
+a42cd2e821bce5061532d38d9f84a45d2986ba58  nvidia-settings-331.20.tar.bz2
+7c05da66de09f2fb2b22d5bd3d34aaf142e7023c  nvidia-xconfig-331.20.tar.bz2
