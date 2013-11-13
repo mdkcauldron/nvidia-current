@@ -998,21 +998,21 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
-%ifarch %{biarches}
-%dir %{nvidia_libdir32}
-%dir %{nvidia_libdir32}/tls
-%dir %{nvidia_libdir32}/vdpau
-
+# .manifest places theese on same place in 32 and 64 bit build
 %{nvidia_libdir32}/libEGL.so.1
 %{nvidia_libdir32}/libEGL.so.%{version}
-%{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libGLESv1_CM.so.1
 %{nvidia_libdir32}/libGLESv1_CM.so.%{version}
 %{nvidia_libdir32}/libGLESv2.so.2
 %{nvidia_libdir32}/libGLESv2.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
-%{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-glsi.so.%{version}
+%ifarch %{biarches}
+%dir %{nvidia_libdir32}
+%dir %{nvidia_libdir32}/tls
+%dir %{nvidia_libdir32}/vdpau
+%{nvidia_libdir32}/libGL.so.%{version}
+%{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
@@ -1064,9 +1064,12 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libnvidia-encode.so
+# .manifest places theese on same place in 32 and 64 bit build
+%{nvidia_libdir32}/libEGL.so
+%{nvidia_libdir32}/libGLESv1_CM.so
+%{nvidia_libdir32}/libGLESv2.so
 %ifarch %{biarches}
 %{nvidia_libdir32}/libnvidia-ml.so
-%{nvidia_libdir32}/libEGL.so
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libGLESv1_CM.so
 %{nvidia_libdir32}/libGLESv2.so
