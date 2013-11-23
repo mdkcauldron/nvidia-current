@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		331.20
-%define rel		2
+%define rel		2.1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -259,17 +259,15 @@ PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/gpu/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
+BUILT_MODULE_NAME[1]="nvidia-uvm"
+BUILT_MODULE_LOCATION[1]="uvm/"
+DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
+MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=/var/lib/dkms/%{drivername}/%{version}-%{release}/build/uvm"
 CLEAN="make -f Makefile.kbuild clean"
+CLEAN+="; make -C uvm clean"
 AUTOINSTALL="yes"
 EOF
-
-# WIP! make uvm build work
-#BUILT_MODULE_NAME[1]="nvidia-uvm"
-#BUILT_MODULE_LOCATION[1]="uvm/"
-#DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
-#MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=/var/lib/dkms/%{drivername}/%{version}-%{release}/build/uvm"
-#CLEAN+="; make -C uvm clean"
 
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
