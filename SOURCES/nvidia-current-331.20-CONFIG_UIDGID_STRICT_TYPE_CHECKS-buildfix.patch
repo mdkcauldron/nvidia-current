@@ -1,0 +1,24 @@
+
+Fix build when CONFIG_UIDGID_STRICT_TYPE_CHECKS is set.
+
+Signed-off-by: Thomas Backlund <tmb@mageia.org>
+
+--- nvidia-current-331.20/NVIDIA-Linux-x86_64-331.20/kernel/uvm/nvidia_uvm_linux.h.orig	2013-11-23 16:13:48.000000000 +0200
++++ nvidia-current-331.20/NVIDIA-Linux-x86_64-331.20/kernel/uvm/nvidia_uvm_linux.h	2013-11-23 17:27:32.000000000 +0200
+@@ -389,12 +389,16 @@ typedef void irqreturn_t;
+ // not require the RCU's read lock on current->cred.
+ //
+ //
++#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
++#define NV_CURRENT_EUID() __kuid_val(current_euid())
++#else
+ #if defined(NV_TASK_STRUCT_HAS_CRED)
+ #define NV_CURRENT_EUID() \
+     (((typeof(*current->cred) __force __kernel *)current->cred)->euid)
+ #else
+ #define NV_CURRENT_EUID() (current->euid)
+ #endif
++#endif
+ 
+ #if !defined(VM_FAULT_NOPAGE)
+ #define VM_FAULT_NOPAGE 0x0100  /* ->fault installed the pte, not return page */

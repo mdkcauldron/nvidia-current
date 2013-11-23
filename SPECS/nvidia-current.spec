@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		331.20
-%define rel		2.1
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -117,6 +117,8 @@ Source5:	http://us.download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persis
 Source10:	nvidia-mgabuild-skel
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+# (tmb) fix uvm build when CONFIG_UIDGID_STRICT_TYPE_CHECKS is set
+Patch4:		nvidia-current-331.20-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -236,10 +238,11 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-#%if !%simple
-#cd %{pkgname}
-#cd ..
-#%endif
+%if !%simple
+cd %{pkgname}
+%patch4 -p2
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
