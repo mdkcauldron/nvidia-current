@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		331.38
-%define rel		2
+%define version		331.49
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	15
 %endif
@@ -117,8 +117,6 @@ Source5:	http://us.download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persis
 Source10:	nvidia-mgabuild-skel
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# (tmb) fix uvm build when CONFIG_UIDGID_STRICT_TYPE_CHECKS is set
-Patch4:		nvidia-current-331.38-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -238,11 +236,10 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch4 -p2
-cd ..
-%endif
+#%if !%simple
+#cd %{pkgname}
+#cd ..
+#%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -472,6 +469,10 @@ cat .manifest | tail -n +9 | while read line; do
 	ENCODEAPI_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
+		;;
+	EXPLICIT_PATH)
+		parseparams dest
+		install_file nvidia %{_datadir}/nvidia
 		;;
 	NVCUVID_LIB)
 		parseparams arch subdir
@@ -925,6 +926,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
+%{_datadir}/nvidia/monitoring.conf
+%{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1072,8 +1075,6 @@ rm -rf %{buildroot}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libnvidia-ml.so
 %{nvidia_libdir32}/libGL.so
-%{nvidia_libdir32}/libGLESv1_CM.so
-%{nvidia_libdir32}/libGLESv2.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-ifr.so
