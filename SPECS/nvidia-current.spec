@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		331.49
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	15
 %endif
@@ -445,13 +445,19 @@ done
 
 # install files according to .manifest
 cat .manifest | tail -n +9 | while read line; do
+	arch=
+	style=
+	subdir=
+	dest=
+	nvidia_libdir=
+
 	rest=${line}
 	file=${rest%%%% *}
 	rest=${rest#* }
 	perms=${rest%%%% *}
 	rest=${rest#* }
 	type=${rest%%%% *}
-	rest=${rest#* }
+	[ "${rest#* }" = "$rest" ] && rest= || rest=${rest#* }
 
 	case "$type" in
 	CUDA_LIB)
@@ -483,11 +489,11 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia-cuda $nvidia_libdir
 		;;
 	NVIFR_LIB)
-		parseparams arch style subdir
-		install_file nvidia $nvidia_libdir
+		parseparams arch subdir
+		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	NVIFR_LIB_SYMLINK)
-		parseparams arch style subdir dest
+		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	OPENGL_LIB)
@@ -507,11 +513,16 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia $nvidia_libdir/$subdir
 		;;
 	UTILITY_LIB)
-		install_file nvidia %{nvidia_libdir}
+		# backward-compatibility
+		[ -n "${rest}" ] || rest="NATIVE $rest"
+		parseparams arch subdir
+		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	UTILITY_LIB_SYMLINK)
-		parseparams dest
-		install_lib_symlink nvidia %{nvidia_libdir}
+		# backward-compatibility
+		[ "${rest#* }" != "$rest" ] || rest="NATIVE $rest"
+		parseparams arch dest
+		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	VDPAU_LIB)
 		parseparams arch subdir
