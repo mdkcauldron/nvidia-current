@@ -269,6 +269,14 @@ CLEAN+="; make -C uvm clean"
 AUTOINSTALL="yes"
 EOF
 
+%if %simple
+# backward-compatibility randomness
+if ! [ -e %{pkgname}/kernel/uvm ]; then
+	grep -v uvm %{pkgname}/kernel/dkms.conf > %{pkgname}/kernel/dkms.conf.2
+	mv -f %{pkgname}/kernel/dkms.conf.2 %{pkgname}/kernel/dkms.conf
+fi
+%endif
+
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
 
