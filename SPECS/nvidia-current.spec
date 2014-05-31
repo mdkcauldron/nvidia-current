@@ -306,7 +306,7 @@ installation in the file 'README.install.urpmi' in this directory.
 EOF
 
 %if !%simple
-rm nvidia-settings-%{version}/src/*/*.a
+#rm nvidia-settings-%{version}/src/*/*.a
 
 %build
 # The code contains dozens on top of dozens on top of dozens of "false" positives
@@ -945,8 +945,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
-%{_datadir}/nvidia/monitoring.conf
-%{_datadir}/nvidia/pci.ids
+%{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
+#{_datadir}/nvidia/monitoring.conf
+#{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1007,46 +1008,53 @@ rm -rf %{buildroot}
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
-%{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
-%{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
+%{nvidia_libdir}/libEGL.so.1
+%{nvidia_libdir}/libEGL.so.%{version}
 %{nvidia_libdir}/libGL.so.1
+%{nvidia_libdir}/libGLESv1_CM.so.1
+%{nvidia_libdir}/libGLESv1_CM.so.%{version}
+%{nvidia_libdir}/libGLESv2.so.2
+%{nvidia_libdir}/libGLESv2.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
+%{nvidia_libdir}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
-# .manifest places theese on same place in 32 and 64 bit build
+%{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
+%ifarch %{biarches}
+%dir %{nvidia_libdir32}
+%dir %{nvidia_libdir32}/tls
+%dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libEGL.so.1
 %{nvidia_libdir32}/libEGL.so.%{version}
+%{nvidia_libdir32}/libGL.so.1
+%{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libGLESv1_CM.so.1
 %{nvidia_libdir32}/libGLESv1_CM.so.%{version}
 %{nvidia_libdir32}/libGLESv2.so.2
 %{nvidia_libdir32}/libGLESv2.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
-%{nvidia_libdir32}/libnvidia-glsi.so.%{version}
-%ifarch %{biarches}
-%dir %{nvidia_libdir32}
-%dir %{nvidia_libdir32}/tls
-%dir %{nvidia_libdir32}/vdpau
-%{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libnvidia-fbc.so.1
 %{nvidia_libdir32}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
-%{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
-%{nvidia_libdir32}/libGL.so.1
 %{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
+%{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %endif
 # %simple
 %endif
@@ -1080,28 +1088,30 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %if !%simple
 %{_includedir}/%{drivername}
+%{nvidia_libdir}/libEGL.so
 %{nvidia_libdir}/libGL.so
+%{nvidia_libdir}/libGLESv1_CM.so
+%{nvidia_libdir}/libGLESv2.so
+%{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-encode.so
 %{nvidia_libdir}/libnvidia-fbc.so
 %{nvidia_libdir}/libnvidia-ifr.so
-%{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-ml.so
-%{nvidia_libdir}/libnvidia-encode.so
-# .manifest places theese on same place in 32 and 64 bit build
+%ifarch %{biarches}
 %{nvidia_libdir32}/libEGL.so
+%{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libGLESv1_CM.so
 %{nvidia_libdir32}/libGLESv2.so
-%ifarch %{biarches}
-%{nvidia_libdir32}/libnvidia-fbc.so
-%{nvidia_libdir32}/libnvidia-ml.so
-%{nvidia_libdir32}/libGL.so
+%{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libnvcuvid.so
-%{nvidia_libdir32}/libnvidia-ifr.so
-%{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-encode.so
+%{nvidia_libdir32}/libnvidia-fbc.so
+%{nvidia_libdir32}/libnvidia-ifr.so
+%{nvidia_libdir32}/libnvidia-ml.so
 %endif
 %endif
 
