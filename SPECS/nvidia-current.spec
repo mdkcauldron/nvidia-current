@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		337.25
-%define rel		3
+%define version		340.32
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	18
 %endif
@@ -946,8 +946,8 @@ rm -rf %{buildroot}
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
-#{_datadir}/nvidia/monitoring.conf
-#{_datadir}/nvidia/pci.ids
+%{_datadir}/nvidia/monitoring.conf
+%{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
