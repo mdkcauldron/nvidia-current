@@ -142,7 +142,7 @@ Group: 		System/Kernel and hardware
 Requires(post): update-alternatives >= 1.9.0
 Requires(postun): update-alternatives >= 1.9.0
 Requires:	x11-server-common
-Suggests:	%{drivername}-doc-html = %{version}
+Recommends:	%{drivername}-doc-html = %{version}
 # Proper support for versioned kmod() was added in 2008.1:
 Requires:	kmod(%{modulename}) = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
