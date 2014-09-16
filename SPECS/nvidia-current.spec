@@ -73,7 +73,7 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
-%define __provides_exclude \\.so
+%global __provides_exclude \\.so
 %define common__requires_exclude libGL\\.so|libGLcore\\.so|libnvidia.*\\.so
 
 %ifarch %{biarches}
@@ -81,9 +81,9 @@
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define __requires_exclude %common_requires_exceptions|lib.*so\\.[^\\(]\\+(\\([^\\)]\\+\\))\\?$
+%global __requires_exclude %common_requires_exceptions|lib.*so\\.[^\\(]\\+(\\([^\\)]\\+\\))\\?$
 %else
-%define __requires_exclude %common_requires_exceptions
+%global __requires_exclude %common_requires_exceptions
 %endif
 
 # (anssi) Workaround wrong linking as of 310.19.
