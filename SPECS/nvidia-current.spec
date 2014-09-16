@@ -89,7 +89,8 @@
 # (anssi) Workaround wrong linking as of 310.19.
 # This will probably be fixed soon (at least similar issues have been in the past).
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%define _exclude_files_from_autoreq libnvidia-encode.so.%version
+%global __provides_exclude_from libnvidia-encode.so.%version
+%global __requires_exclude_from libnvidia-encode.so.%version
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
