@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		340.32
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	18
 %endif
@@ -145,7 +145,7 @@ Requires(postun): update-alternatives >= 1.9.0
 Requires:	x11-server-common
 Recommends:	%{drivername}-doc-html = %{version}
 # Proper support for versioned kmod() was added in 2008.1:
-Requires:	kmod(%{modulename}) = %{version}
+Requires:	kmod(%{modulename}.ko) = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
 # the vdpau library package. We ensure its installation here.
 Requires:	%{_lib}vdpau1
@@ -178,6 +178,7 @@ Group:		System/Kernel and hardware
 Requires:	dkms
 Requires(post):	dkms
 Requires(preun): dkms
+Provides:	kmod(%{modulename}.ko) = %{version}
 Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
@@ -206,7 +207,7 @@ is not required for normal use.
 Summary:	CUDA and OpenCL libraries for NVIDIA proprietary driver
 Group: 		System/Kernel and hardware
 Provides:	%{drivername}-cuda = %{version}-%{release}
-Requires:	kmod(%{modulename}) = %{version}
+Requires:	kmod(%{modulename}.ko) = %{version}
 Conflicts:	nvidia < 1:195.36.15-4
 Conflicts:	x11-driver-video-nvidia-current <= 295.59-1
 
