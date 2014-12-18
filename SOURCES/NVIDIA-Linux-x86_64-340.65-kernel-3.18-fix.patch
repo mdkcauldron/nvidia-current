@@ -1,0 +1,58 @@
+
+https://bugs.mageia.org/show_bug.cgi?id=14769
+https://bugs.mageia.org/show_bug.cgi?id=14832
+
+
+https://devtalk.nvidia.com/default/topic/796559/linux/kernel-3-18-warning-no-drm_driver-set_busid-implementation-provided-by-nvidia_frontend_exit_modu/
+
+ kernel/nv-drm.c      |    3 +++
+ kernel/nv-frontend.c |    4 ++--
+ kernel/nv.c          |    2 +-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv.c NVIDIA-Linux-x86_64-340.65/kernel/nv.c
+--- NVIDIA-Linux-x86_64-340.65.orig/kernel/nv.c	2014-12-02 18:45:10.000000000 +0200
++++ NVIDIA-Linux-x86_64-340.65/kernel/nv.c	2014-12-18 16:56:04.522489168 +0200
+@@ -1839,7 +1839,7 @@ nvidia_unlocked_ioctl(
+     unsigned long i_arg
+ )
+ {
+-    return nvidia_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
+ }
+ 
+ /*
+diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-drm.c NVIDIA-Linux-x86_64-340.65/kernel/nv-drm.c
+--- NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-drm.c	2014-12-02 18:45:10.000000000 +0200
++++ NVIDIA-Linux-x86_64-340.65/kernel/nv-drm.c	2014-12-18 16:53:20.905947908 +0200
+@@ -127,6 +127,9 @@ static struct drm_driver nv_drm_driver =
+     .gem_prime_get_sg_table = nv_gem_prime_get_sg_table,
+     .gem_prime_vmap = nv_gem_prime_vmap,
+     .gem_prime_vunmap = nv_gem_prime_vunmap,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
++    .set_busid = drm_pci_set_busid,
++#endif
+ 
+     .name = "nvidia-drm",
+     .desc = "NVIDIA DRM driver",
+diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-frontend.c NVIDIA-Linux-x86_64-340.65/kernel/nv-frontend.c
+--- NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-frontend.c	2014-12-02 18:45:11.000000000 +0200
++++ NVIDIA-Linux-x86_64-340.65/kernel/nv-frontend.c	2014-12-18 16:55:01.976904016 +0200
+@@ -327,7 +327,7 @@ long nvidia_frontend_unlocked_ioctl(
+     unsigned long i_arg
+ )
+ {
+-    return nvidia_frontend_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_frontend_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
+ }
+ 
+ long nvidia_frontend_compat_ioctl(
+@@ -336,7 +336,7 @@ long nvidia_frontend_compat_ioctl(
+     unsigned long i_arg
+ )
+ {
+-    return nvidia_frontend_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_frontend_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
+ }
+ 
+ int nvidia_frontend_mmap(
