@@ -18,7 +18,7 @@ diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv.c NVIDIA-Linux-x86_64-340.6
  )
  {
 -    return nvidia_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
-+    return nvidia_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_ioctl(file->f_path.dentry->d_inode, file, cmd, i_arg);
  }
  
  /*
@@ -43,7 +43,7 @@ diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-frontend.c NVIDIA-Linux-x86
  )
  {
 -    return nvidia_frontend_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
-+    return nvidia_frontend_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_frontend_ioctl(file->f_path.dentry->d_inode, file, cmd, i_arg);
  }
  
  long nvidia_frontend_compat_ioctl(
@@ -52,7 +52,7 @@ diff -Nurp NVIDIA-Linux-x86_64-340.65.orig/kernel/nv-frontend.c NVIDIA-Linux-x86
  )
  {
 -    return nvidia_frontend_ioctl(file->f_dentry->d_inode, file, cmd, i_arg);
-+    return nvidia_frontend_ioctl(file->f_path.f_dentry->d_inode, file, cmd, i_arg);
++    return nvidia_frontend_ioctl(file->f_path.dentry->d_inode, file, cmd, i_arg);
  }
  
  int nvidia_frontend_mmap(
