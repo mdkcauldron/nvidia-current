@@ -132,7 +132,7 @@ BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
-BuildRequires:	vdpau-devel
+BuildRequires:	vdpau-devel >= 0.9
 %endif
 
 %description
