@@ -509,6 +509,22 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
+	OPENCL_LIB)
+		parseparams arch subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_LIB_SYMLINK)
+		parseparams arch subdir dest
+		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_WRAPPER_LIB)
+		parseparams arch subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_WRAPPER_SYMLINK)
+		parseparams arch subdir dest
+		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+		;;
 	OPENGL_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
@@ -587,6 +603,10 @@ cat .manifest | tail -n +9 | while read line; do
 		esac
 		parseparams subdir dest
 		install_symlink nvidia $(get_module_dir $subdir)
+		;;
+	XORG_OUTPUTCLASS_CONFIG)
+		# (tmb) dont install xorg driver autoloader conf
+		continue
 		;;
 	XMODULE_SYMLINK|GLX_MODULE_SYMLINK)
 		parseparams subdir dest
