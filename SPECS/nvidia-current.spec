@@ -129,6 +129,7 @@ ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	ImageMagick
 BuildRequires:	gtk+2-devel
+BuildRequires:	gtk+3-devel
 BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
