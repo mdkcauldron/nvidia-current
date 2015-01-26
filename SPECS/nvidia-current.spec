@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		346.35
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	19
 %endif
@@ -771,8 +771,10 @@ install -m755 ../nvidia-settings-%{version}/src/_out/*/nvidia-settings %{buildro
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{nvidia_bindir}
 install -m755 ../nvidia-persistenced-%{version}/_out/*/nvidia-persistenced %{buildroot}%{nvidia_bindir}
 install -m4755 ../nvidia-modprobe-%{version}/_out/*/nvidia-modprobe %{buildroot}%{nvidia_bindir}
-# nvidia-settings dlopens libnvidia-gtk*.so
-install -m755 ../nvidia-settings-%{version}/src/_out/*/libnvidia-gtk*.so %{buildroot}%{nvidia_libdir}
+# nvidia-settings dlopens libnvidia-gtk*.so.VERSION
+for file in ../nvidia-settings-%{version}/src/_out/*/libnvidia-gtk*.so; do
+	install -m755 ${file} %{buildroot}%{nvidia_libdir}/$(basename "$file").%{version}
+done
 %endif
 # binary alternatives
 install -d -m755			%{buildroot}%{_bindir}
@@ -1093,7 +1095,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
-%{nvidia_libdir}/libnvidia-gtk*.so
+%{nvidia_libdir}/libnvidia-gtk2.so.%{version}
+%{nvidia_libdir}/libnvidia-gtk3.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.1
