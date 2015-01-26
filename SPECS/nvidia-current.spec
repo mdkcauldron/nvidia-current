@@ -36,7 +36,7 @@
 %define driverpkgname		x11-driver-video-%{drivername}
 %define modulename		%{drivername}
 # for description and documentation
-%define cards			GeForce 8xxx and later cards
+%define cards			GeForce 420 and later cards
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
 %define nvidia_driversdir	%{_libdir}/%{drivername}/xorg
 %define nvidia_extensionsdir	%{_libdir}/%{drivername}/xorg
@@ -44,18 +44,19 @@
 %define nvidia_libdir		%{_libdir}/%{drivername}
 %define nvidia_libdir32		%{_prefix}/lib/%{drivername}
 %define nvidia_bindir		%{nvidia_libdir}/bin
+%define nvidia_datadir		%{_datadir}/nvidia-alt-%{drivername}
 # The entry in Cards+ this driver should be associated with, if there is
 # no entry in ldetect-lst default pcitable:
 # cooker ldetect-lst should be up-to-date
 %define ldetect_cards_name	%nil
 
-# NVIDIA cards not listed in main ldetect-lst pcitable are not likely
-# to be supported by nv which is from the same time period. Therefore
-# mark them as not working with nv. (main pcitable entries override
-# our entries)
-%if %simple || %mgaversion <= 2
-# nvidia/vesa
+%if %simple
+# assign a Cards+ entry according to Mageia version
+%define ldetect_cards_name	NVIDIA GeForce 420 series and later
+%if %mgaversion <= 4
+# nvidia/nouveau
 %define ldetect_cards_name	NVIDIA GeForce 400 series and later
+%endif
 %endif
 
 %define biarches x86_64
@@ -89,8 +90,12 @@
 # (anssi) Workaround wrong linking as of 310.19.
 # This will probably be fixed soon (at least similar issues have been in the past).
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%global __provides_exclude_from libnvidia-encode.so.%version
 %global __requires_exclude_from libnvidia-encode.so.%version
+
+# backportability
+%global _provides_exceptions %(echo '%__provides_exclude' | sed 's,|,\\\\|,g')
+%global _requires_exceptions %(echo '%__requires_exclude' | sed 's,|,\\\\|,g')
+%global _exclude_files_from_autoreq %(echo '%__requires_exclude_from' | sed 's,|,\\\\|,g')
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
@@ -138,7 +143,7 @@ BuildRequires:	vdpau-devel >= 0.9
 
 %description
 Source package of the current NVIDIA proprietary driver. Binary
-packages are named x11-driver-video-nvidia-current.
+packages are named %{driverpkgname}.
 
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
@@ -491,7 +496,8 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	EXPLICIT_PATH)
 		parseparams dest
-		install_file nvidia %{_datadir}/nvidia
+		dest="$(echo "$dest" | sed s,%{_datadir}/nvidia,%{nvidia_datadir},)"
+		install_file nvidia $dest
 		;;
 	NVCUVID_LIB)
 		parseparams arch subdir
@@ -542,6 +548,10 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia $nvidia_libdir/$subdir
 		;;
 	UTILITY_LIB)
+%if !%simple
+		# skip libnvidia-gtk[23], we build those by ourself
+		echo "$file" | grep -q nvidia-gtk && continue
+%endif
 		# backward-compatibility
 		[ -n "${rest}" ] || rest="NATIVE $rest"
 		parseparams arch subdir
@@ -711,9 +721,7 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	APPLICATION_PROFILE)
 		parseparams subdir
-		# application profile filenames are versioned, we can use a common
-		# non-alternativesized directory
-		install_file nvidia %{_datadir}/nvidia/$subdir
+		install_file nvidia %{nvidia_datadir}/$subdir
 		;;
 	DOT_DESKTOP)
 		# we provide our own for now
@@ -763,6 +771,8 @@ install -m755 ../nvidia-settings-%{version}/src/_out/*/nvidia-settings %{buildro
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{nvidia_bindir}
 install -m755 ../nvidia-persistenced-%{version}/_out/*/nvidia-persistenced %{buildroot}%{nvidia_bindir}
 install -m4755 ../nvidia-modprobe-%{version}/_out/*/nvidia-modprobe %{buildroot}%{nvidia_bindir}
+# nvidia-settings dlopens libnvidia-gtk*.so
+install -m755 ../nvidia-settings-%{version}/src/_out/*/libnvidia-gtk*.so %{buildroot}%{nvidia_libdir}
 %endif
 # binary alternatives
 install -d -m755			%{buildroot}%{_bindir}
@@ -778,7 +788,15 @@ touch					%{buildroot}%{_bindir}/nvidia-cuda-mps-server
 # rpmlint:
 chmod 0755				%{buildroot}%{_bindir}/*
 
+# datadir alternative
+mkdir -p				%{buildroot}%{_datadir}/nvidia
+
 %if !%simple
+# See posttrans script
+for file in %{buildroot}%{nvidia_datadir}/pci.ids %{buildroot}%{nvidia_datadir}/monitoring.conf; do
+	ln -T "$file" "%{buildroot}%{_datadir}/%{drivername}/$(basename "$file").mga"
+done
+
 # install man pages
 install -m644 ../nvidia-settings-%{version}/doc/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
 install -m644 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig.1 %{buildroot}%{_mandir}/man1
@@ -854,8 +872,8 @@ cat README.txt | while read line; do
 	fi
 
 	echo "$line" | grep -Pq "^\s*-+[\s-]+$" && continue
-	id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
-	id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
+	id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+(0x)?([0-9a-fA-F]{4}).*$,\2,p' | tr '[:upper:]' '[:lower:]')
+	#id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
 	subsysid=
 	# not useful as of 2013-05 -Anssi
 	#[ -n "$id2" ] && subsysid="	0x10de	0x$id2"
@@ -868,7 +886,18 @@ install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
 gzip -c pcitable.nvidia.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
-export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig \! -name nvidia-modprobe \! -name nvidia-persistenced)"
+export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig \! -name nvidia-modprobe \! -name nvidia-persistenced \! -name 'libnvidia-gtk*.so')"
+
+%pretrans -n %{driverpkgname}
+# Migrate old non-alternativeszificated datadir
+if ! [ -L %{_datadir}/nvidia ] && [ -d %{_datadir}/nvidia ]; then
+	if ! [ -e %{nvidia_datadir} ]; then
+		mv -T %{_datadir}/nvidia %{nvidia_datadir}
+	else
+		# should not really be encountered
+		mv -T %{_datadir}/nvidia %{_datadir}/nvidia.${RANDOM}
+	fi
+fi
 
 %post -n %{driverpkgname}
 # XFdrake used to generate an nvidia.conf file
@@ -904,6 +933,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_prefix}/lib/vdpau/libvdpau_nvidia.so.1 libvdpau_nvidia.so.1 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version} \
 %endif
 	--slave %{xorg_extra_modules} xorg_extra_modules %{nvidia_extensionsdir} \
+	--slave %{_datadir}/nvidia nvidia_datadir %{nvidia_datadir} \
 
 if [ "${current_glconf}" = "%{_sysconfdir}/nvidia97xx/ld.so.conf" ]; then
 	# Adapt for the renaming of the driver. X.org config still has the old ModulePaths
@@ -916,6 +946,17 @@ fi
 %if "%{ldetect_cards_name}" != ""
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
 %endif
+
+%posttrans -n %{driverpkgname}
+# When upgrading 340 => 346, the alternativeszification of /usr/share/nvidia may
+# cause uninstallation of 340 (during upgrade) to remove these files through
+# the /usr/share/nvidia symlink. Restore them.
+for file in %{nvidia_datadir}/pci.ids %{nvidia_datadir}/monitoring.conf; do
+	backupfile="%{_datadir}/%{drivername}/$(basename "$file").mga"
+	if ! [ -e $file ] && [ -e "$backupfile" ]; then
+		ln -T "$backupfile" "$file"
+	fi
+done
 
 %postun -n %{driverpkgname}
 if [ ! -f %{_sysconfdir}/%{drivername}/ld.so.conf ]; then
@@ -966,13 +1007,17 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/ld.so.conf
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
+%ghost %{_datadir}/nvidia
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
-%dir %{_datadir}/nvidia
-%{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
-%{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
-%{_datadir}/nvidia/monitoring.conf
-%{_datadir}/nvidia/pci.ids
+%dir %{nvidia_datadir}
+%{nvidia_datadir}/nvidia-application-profiles-%{version}-rc
+%{nvidia_datadir}/nvidia-application-profiles-%{version}-key-documentation
+%{nvidia_datadir}/monitoring.conf
+%{nvidia_datadir}/pci.ids
+# backups, see posttrans
+%{_datadir}/%{drivername}/monitoring.conf.mga
+%{_datadir}/%{drivername}/pci.ids.mga
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1048,6 +1093,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
+%{nvidia_libdir}/libnvidia-gtk*.so
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.1
