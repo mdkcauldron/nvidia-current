@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		346.35
-%define rel		4
+%define rel		5
 # the highest supported videodrv abi
 %define videodrv_abi	19
 %endif
@@ -121,7 +121,8 @@ Source5:	http://us.download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persis
 %endif
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source10:	nvidia-mgabuild-skel
-
+# (tmb) fix drm trace in dmesg
+Patch2:		NVIDIA-Linux-x86_64-346.35-kernel-3.18-fix.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 %endif
@@ -246,10 +247,11 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-#if !%simple
-#cd %{pkgname}
-#cd ..
-#endif
+%if !%simple
+cd %{pkgname}
+%patch2 -p1
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
