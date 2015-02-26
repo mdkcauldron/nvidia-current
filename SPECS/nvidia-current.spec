@@ -245,11 +245,10 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch2 -p1
-cd ..
-%endif
+#if !%simple
+#cd %{pkgname}
+#cd ..
+#endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
