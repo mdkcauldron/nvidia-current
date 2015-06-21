@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		346.72
-%define rel		2
+%define version		352.21
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	19
 %endif
@@ -800,9 +800,9 @@ mkdir -p				%{buildroot}%{_datadir}/nvidia
 
 %if !%simple
 # See posttrans script
-for file in %{buildroot}%{nvidia_datadir}/pci.ids %{buildroot}%{nvidia_datadir}/monitoring.conf; do
-	ln -T "$file" "%{buildroot}%{_datadir}/%{drivername}/$(basename "$file").mga"
-done
+#for file in %{buildroot}%{nvidia_datadir}/pci.ids %{buildroot}%{nvidia_datadir}/monitoring.conf; do
+#	ln -T "$file" "%{buildroot}%{_datadir}/%{drivername}/$(basename "$file").mga"
+#done
 
 # install man pages
 install -m644 ../nvidia-settings-%{version}/doc/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
@@ -1020,11 +1020,11 @@ rm -rf %{buildroot}
 %dir %{nvidia_datadir}
 %{nvidia_datadir}/nvidia-application-profiles-%{version}-rc
 %{nvidia_datadir}/nvidia-application-profiles-%{version}-key-documentation
-%{nvidia_datadir}/monitoring.conf
-%{nvidia_datadir}/pci.ids
+#{nvidia_datadir}/monitoring.conf
+#{nvidia_datadir}/pci.ids
 # backups, see posttrans
-%{_datadir}/%{drivername}/monitoring.conf.mga
-%{_datadir}/%{drivername}/pci.ids.mga
+#{_datadir}/%{drivername}/monitoring.conf.mga
+#{_datadir}/%{drivername}/pci.ids.mga
 %endif
 
 %dir %{_sysconfdir}/OpenCL
