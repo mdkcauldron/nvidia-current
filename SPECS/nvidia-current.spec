@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		352.30
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	19
 %endif
@@ -138,6 +138,9 @@ BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
 BuildRequires:	vdpau-devel >= 0.9
+# (tmb) temp force gcc 5
+BuildRequires:  gcc >= 5.2.1
+
 %endif
 
 %description
