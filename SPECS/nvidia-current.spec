@@ -138,8 +138,6 @@ BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
 BuildRequires:	vdpau-devel >= 0.9
-# (tmb) temp force gcc 5
-BuildRequires:  gcc >= 5.2.1
 
 %endif
 
@@ -1166,9 +1164,11 @@ rm -rf %{buildroot}
 %{nvidia_driversdir}/nvidia_drv.so
 %endif
 
+%if %simple
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
+%else
+%files -n %{drivername}-devel
 %defattr(-,root,root)
-%if !%simple
 %{_includedir}/%{drivername}
 %{nvidia_libdir}/libEGL.so
 %{nvidia_libdir}/libGL.so
@@ -1205,11 +1205,13 @@ rm -rf %{buildroot}
 %files -n %{drivername}-doc-html -f %pkgname/nvidia-html.files
 %defattr(-,root,root)
 
+%if %simple
 %files -n %{drivername}-cuda-opencl -f %pkgname/nvidia-cuda.files
+%else
+%files -n %{drivername}-cuda-opencl
 %defattr(-,root,root)
 # Do not preferably add any alternativeszificated binaries here,
 # they cause broken symlinks.
-%if !%simple
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
