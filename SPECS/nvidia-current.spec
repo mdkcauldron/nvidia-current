@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		352.63
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -979,6 +979,10 @@ fi
 
 %post -n %{drivername}-cuda-opencl
 # explicit /sbin/ldconfig due to a non-standard library directory
+/sbin/ldconfig -X
+
+%post -n %{drivername}-devel
+# explicit /sbin/ldconfig due to a non-standard library directory (mga#14462)
 /sbin/ldconfig -X
 
 %post -n dkms-%{drivername}
