@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		352.79
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -148,8 +148,8 @@ packages are named %{driverpkgname}.
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
 Group: 		System/Kernel and hardware
-Requires(post): update-alternatives >= 1.9.0
-Requires(postun): update-alternatives >= 1.9.0
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
 Requires:	x11-server-common
 Recommends:	%{drivername}-doc-html = %{version}
 # Proper support for versioned kmod() was added in 2008.1:
