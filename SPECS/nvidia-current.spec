@@ -254,7 +254,7 @@ cd %{pkgname}
 %patch10 -p1
 %ifarch x86_64
 %patch11 -p1
-¤endif
+%endif
 cd ..
 %endif
 
