@@ -126,6 +126,7 @@ Patch3:		nvidia-settings-include-xf86vmproto.patch
 %endif
 # (tmb) fix build with kernel 4.6
 Patch10:	NVIDIA-Linux-x86_64-361.42-kernel-4.6-buildfix.patch
+Patch11:	NVIDIA-Linux-x86_64-361.42-uvm-kernel-4.6-buildfix.patch
 
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -251,6 +252,9 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch10 -p1
+%ifarch x86_64
+%patch11 -p1
+¤endif
 cd ..
 %endif
 

@@ -1,0 +1,22 @@
+
+In kernel 4.6 page_cache_release() got renamed to put_page()
+
+The uvm part is 64bit only.
+
+Signed-off-by: Thomas Backlund <tmb@mageia.org>
+
+diff -Nurpt NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia-uvm/uvm_full_pagetbl_mgmt.c NVIDIA-Linux-x86_64-361.42/kernel/nvidia-uvm/uvm_full_pagetbl_mgmt.c
+--- NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia-uvm/uvm_full_pagetbl_mgmt.c	2016-03-23 01:48:41.000000000 +0200
++++ NVIDIA-Linux-x86_64-361.42/kernel/nvidia-uvm/uvm_full_pagetbl_mgmt.c	2016-04-12 02:46:20.438968516 +0300
+@@ -2937,7 +2937,11 @@ cleanup_vadesc:
+                     set_page_dirty_lock(tempUserPageArray[i]);
+ 
+             UVM_PANIC_ON(tempUserPageArray[i] == 0);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0)
+             page_cache_release(tempUserPageArray[i]);
++#else
++            put_page(tempUserPageArray[i]);
++#endif
+             tempUserPageArray[i] = 0;
+         }
+ 
