@@ -1,12 +1,25 @@
 
 In kernel 4.6 page_cache_release() got renamed to put_page()
+and get_user_page() to get_user_page_remote()
 
 Signed-off-by: Thomas Backlund <tmb@mageia.org>
 
-diff -Nurpt NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia/os-mlock.c NVIDIA-Linux-x86_64-361.42/kernel/nvidia/os-mlock.c
+diff -Nurp NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia/os-mlock.c NVIDIA-Linux-x86_64-361.42/kernel/nvidia/os-mlock.c
 --- NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia/os-mlock.c	2016-03-23 01:48:07.000000000 +0200
-+++ NVIDIA-Linux-x86_64-361.42/kernel/nvidia/os-mlock.c	2016-04-12 02:48:45.321853278 +0300
-@@ -129,7 +129,11 @@ NV_STATUS NV_API_CALL os_lock_user_pages
++++ NVIDIA-Linux-x86_64-361.42/kernel/nvidia/os-mlock.c	2016-04-21 14:56:23.732932025 +0300
+@@ -116,7 +116,11 @@ NV_STATUS NV_API_CALL os_lock_user_pages
+     }
+ 
+     down_read(&mm->mmap_sem);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0)
+     ret = get_user_pages(current, mm, (unsigned long)address,
++#else
++    ret = get_user_pages_remote(current, mm, (unsigned long)address,
++#endif
+             page_count, write, force, user_pages, NULL);
+     up_read(&mm->mmap_sem);
+     pinned = ret;
+@@ -129,7 +133,11 @@ NV_STATUS NV_API_CALL os_lock_user_pages
      else if (pinned < page_count)
      {
          for (i = 0; i < pinned; i++)
@@ -18,7 +31,7 @@ diff -Nurpt NVIDIA-Linux-x86_64-361.42.orig/kernel/nvidia/os-mlock.c NVIDIA-Linu
          os_free_mem(user_pages);
          return NV_ERR_INVALID_ADDRESS;
      }
-@@ -156,7 +160,11 @@ NV_STATUS NV_API_CALL os_unlock_user_pag
+@@ -156,7 +164,11 @@ NV_STATUS NV_API_CALL os_unlock_user_pag
      {
          if (write)
              set_page_dirty_lock(user_pages[i]);
