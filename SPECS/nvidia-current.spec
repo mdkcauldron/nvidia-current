@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		361.42
-%define rel		3
+%define rel		10
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -141,7 +141,6 @@ BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
 BuildRequires:	vdpau-devel >= 0.9
-
 %endif
 
 %description
@@ -194,6 +193,12 @@ Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
 Provides:	dkms-nvidia97xx = %{version}-%{release}
+# (tmb) prebuilt kmods violates gpl
+%ifarch %{ix86}
+%rename		nvidia-current-kernel-desktop586-latest
+%endif
+%rename		nvidia-current-kernel-desktop-latest
+%rename		nvidia-current-kernel-server-latest
 
 %description -n dkms-%{drivername}
 NVIDIA kernel module for %cards. This
