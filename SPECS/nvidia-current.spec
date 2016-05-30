@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		361.42
-%define rel		10
+%define version		361.45.11
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -124,9 +124,6 @@ Source10:	nvidia-mgabuild-skel
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 %endif
-# (tmb) fix build with kernel 4.6
-Patch10:	NVIDIA-Linux-x86_64-361.42-kernel-4.6-buildfix.patch
-Patch11:	NVIDIA-Linux-x86_64-361.42-uvm-kernel-4.6-buildfix.patch
 
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -254,14 +251,10 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch10 -p1
-%ifarch x86_64
-%patch11 -p1
-%endif
-cd ..
-%endif
+#if !%simple
+#cd %{pkgname}
+#cd ..
+#endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -1181,7 +1174,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libGLESv2_nvidia.so.%{version}
 %{nvidia_libdir32}/libGLX_indirect.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.0
-%{nvidia_libdir32}/libGLX_nvidia.so.361.42
+%{nvidia_libdir32}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir32}/libOpenGL.so.0
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
