@@ -11,11 +11,15 @@
 %{?_without_simple: %global simple 0}
 %{?_with_simple: %global simple 1}
 
+# debugfiles.list is empty, dont try to create the rpms
+%define _enable_debug_packages  %{nil}
+%define debug_package           %{nil}
+
 %define name		nvidia-current
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		361.45.11
+%define version		367.27
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	20
@@ -328,10 +332,10 @@ export CFLAGS="%optflags -Wno-error=format-security"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{?ldflags}"
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
-%make -C nvidia-settings-%{version} STRIP_CMD=true
-%make -C nvidia-xconfig-%{version} STRIP_CMD=true
-%make -C nvidia-modprobe-%{version} STRIP_CMD=true
-%make -C nvidia-persistenced-%{version} STRIP_CMD=true
+%make -C nvidia-settings-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
+%make -C nvidia-xconfig-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
+%make -C nvidia-modprobe-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
+%make -C nvidia-persistenced-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
 
 # %simple
 %endif
@@ -623,6 +627,9 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir dest
 		case $file in *libvdpau_nvidia.so*);; *) continue; esac
 		install_lib_symlink nvidia $nvidia_libdir/$subdir
+		;;
+	VULKAN_ICD_JSON)
+		install_file nvidia %{_sysconfdir}/vulkan/icd.d/
 		;;
 	XLIB_STATIC_LIB)
 		install_file nvidia-devel %{nvidia_libdir}
@@ -1051,6 +1058,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/ld.so.conf
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
+%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json
 %ghost %{_datadir}/nvidia
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
@@ -1142,6 +1150,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libOpenGL.so.0
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
+%{nvidia_libdir}/libnvidia-egl-wayland.so.%{version}
 %{nvidia_libdir}/libnvidia-fatbinaryloader.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
