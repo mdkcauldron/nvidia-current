@@ -20,7 +20,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		367.27
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -186,9 +186,9 @@ including the associated Quadro cards.
 %package -n dkms-%{drivername}
 Summary:	NVIDIA kernel module for %cards
 Group:		System/Kernel and hardware
-Requires:	dkms
-Requires(post):	dkms
-Requires(preun): dkms
+Requires:	dkms >= 2.0.19-37
+Requires(post):	dkms >= 2.0.19-37
+Requires(preun): dkms >= 2.0.19-37
 Provides:	kmod(%{modulename}.ko) = %{version}
 Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
@@ -283,7 +283,7 @@ DEST_MODULE_LOCATION[1]="/kernel/drivers/char/drm"
 BUILT_MODULE_NAME[2]="nvidia-uvm"
 DEST_MODULE_LOCATION[2]="/kernel/drivers/char/drm"
 %endif
-MAKE[0]="'make' SYSSRC=\${kernel_source_dir} modules"
+MAKE[0]="'make' -j\${parallel_jobs} SYSSRC=\${kernel_source_dir} modules"
 AUTOINSTALL="yes"
 EOF
 
