@@ -20,7 +20,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		367.27
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -127,6 +127,9 @@ Source5:	http://us.download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persis
 Source10:	nvidia-mgabuild-skel
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+# (tmb) fix build with kernel 4.7 series
+Patch4:		NVIDIA-Linux-x86_64-367.27-uvm-radix_tree_empty-redefine.patch
+Patch5:		NVIDIA-Linux-x86_64-367.27-drm_gem_object_lookup-fix.patch
 %endif
 
 License:	Freeware
@@ -255,10 +258,14 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-#if !%simple
-#cd %{pkgname}
-#cd ..
-#endif
+%if !%simple
+cd %{pkgname}
+%ifarch x86_64
+%patch4 -p1
+%endif
+%patch5 -p1
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 

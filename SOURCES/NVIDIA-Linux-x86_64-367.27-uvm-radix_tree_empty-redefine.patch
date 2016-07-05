@@ -1,0 +1,31 @@
+
+kernel-4.7 defines conflicting radix_tree_empty in  include/linux/radix-tree.h
+
+So rename this one to be nvidia specific
+
+Signed-off-by: Thomas Backlund <tmb@mageia.org>
+
+diff -Nurp NVIDIA-Linux-x86_64-367.27.orig/kernel/nvidia-uvm/uvm8_gpu.c NVIDIA-Linux-x86_64-367.27/kernel/nvidia-uvm/uvm8_gpu.c
+--- NVIDIA-Linux-x86_64-367.27.orig/kernel/nvidia-uvm/uvm8_gpu.c	2016-06-10 03:37:08.000000000 +0300
++++ NVIDIA-Linux-x86_64-367.27/kernel/nvidia-uvm/uvm8_gpu.c	2016-07-05 00:24:12.914538271 +0300
+@@ -638,7 +638,7 @@ static void remove_gpu(uvm_gpu_t *gpu)
+                    gpu->id, uvm_gpu_retained_count(gpu));
+ 
+     // All channels should have been removed before the retained count went to 0
+-    UVM_ASSERT(radix_tree_empty(&gpu->instance_ptr_table));
++    UVM_ASSERT(uvm_radix_tree_empty(&gpu->instance_ptr_table));
+ 
+     // Remove the GPU from the table.
+     uvm_spin_lock_irqsave(&g_uvm_global.gpu_table_lock);
+diff -Nurp NVIDIA-Linux-x86_64-367.27.orig/kernel/nvidia-uvm/uvm_linux.h NVIDIA-Linux-x86_64-367.27/kernel/nvidia-uvm/uvm_linux.h
+--- NVIDIA-Linux-x86_64-367.27.orig/kernel/nvidia-uvm/uvm_linux.h	2016-06-10 03:37:08.000000000 +0300
++++ NVIDIA-Linux-x86_64-367.27/kernel/nvidia-uvm/uvm_linux.h	2016-07-05 00:23:33.100681784 +0300
+@@ -563,7 +563,7 @@ static void uvm_init_radix_tree_preloada
+     INIT_RADIX_TREE(tree, GFP_NOWAIT);
+ }
+ 
+-static bool radix_tree_empty(struct radix_tree_root *tree)
++static bool uvm_radix_tree_empty(struct radix_tree_root *tree)
+ {
+     void *dummy;
+     return radix_tree_gang_lookup(tree, &dummy, 0, 1) == 0;
