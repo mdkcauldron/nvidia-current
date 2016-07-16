@@ -19,8 +19,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		367.27
-%define rel		3
+%define version		367.35
+%define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
