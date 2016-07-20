@@ -20,7 +20,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		367.35
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	20
 %endif
@@ -290,6 +290,8 @@ DEST_MODULE_LOCATION[1]="/kernel/drivers/char/drm"
 BUILT_MODULE_NAME[2]="nvidia-uvm"
 DEST_MODULE_LOCATION[2]="/kernel/drivers/char/drm"
 %endif
+BUILT_MODULE_NAME[3]="nvidia-drm"
+DEST_MODULE_LOCATION[3]="/kernel/drivers/char/drm"
 MAKE[0]="'make' -j\${parallel_jobs} SYSSRC=\${kernel_source_dir} modules"
 AUTOINSTALL="yes"
 EOF
